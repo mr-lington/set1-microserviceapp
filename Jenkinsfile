@@ -1,12 +1,17 @@
-pipeline { 
+pipeline {
     agent any
+
+    environment {
+        IMAGE_NAME = "stephenadmin/shippingservice"
+        BUILD_TAG = "${BUILD_NUMBER}"
+    }
 
     stages {
         stage('Build & Tag Docker Image') {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker build -t adijaiswal/shippingservice:latest ."
+                        sh "docker build -t ${IMAGE_NAME}:${BUILD_TAG} ."
                     }
                 }
             }
@@ -16,7 +21,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker push adijaiswal/shippingservice:latest "
+                        sh "docker push ${IMAGE_NAME}:${BUILD_TAG}"
                     }
                 }
             }
