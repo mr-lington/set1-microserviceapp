@@ -27,38 +27,32 @@ pipeline {
                 }
             }
         }
-        stage('Update Deployment Manifest') {
+        stage('Update Deployment Manifest in Stage Branch') {
             steps {
                 script {
                     sh """
-                        sed -i 's|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${BUILD_TAG}|' ${DEPLOYMENT_MANIFEST}
-                    """
-                }
-            }
-        }
-        stage('Commit & Push Changes to Stage Branch') {
-            steps {
-                script {
-                    sh """
-                        git config --global user.email "jenkins@eamanzetec.com.ng"
-                        git config --global user.name "Jenkins CI"
+                        git clone ${REPO_URL}
+                        cd your-repo
                         git checkout ${STAGE_BRANCH}
+                        sed -i 's|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${BUILD_TAG}|' ${DEPLOYMENT_MANIFEST}
                         git add ${DEPLOYMENT_MANIFEST}
-                        git commit -m "Update image tag to ${IMAGE_NAME}:${BUILD_TAG}"
+                        git commit -m "Update image tag to ${IMAGE_NAME}:${BUILD_TAG} in stage branch"
                         git push ${REPO_URL} ${STAGE_BRANCH}
                     """
                 }
             }
         }
-        stage('Manual Approval') {
+        stage('Manual Approval for Main Branch Update') {
             steps {
-                input message: 'Approve deployment to the main branch?', ok: 'Deploy'
+                input message: 'Approve deployment to the main branch?', ok: 'Proceed'
             }
         }
-        stage('Update & Commit to Main Branch') {
+        stage('Update Deployment Manifest in Main Branch') {
             steps {
                 script {
                     sh """
+                        git clone ${REPO_URL}
+                        cd your-repo
                         git checkout ${MAIN_BRANCH}
                         git merge ${STAGE_BRANCH}
                         git push ${REPO_URL} ${MAIN_BRANCH}
