@@ -33,7 +33,7 @@ pipeline {
                     sh """
                         git clone ${GIT_REPO_URL}
                         cd set1-microserviceapp
-                        git config --global user.email "jenkins@yourdomain.com"
+                        git config --global user.email "jenkins@eamanzetec.com.ng"
                         git config --global user.name "Jenkins CI"
                         git checkout ${STAGE_BRANCH}
                         sed -i 's|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${BUILD_TAG}|' ${DEPLOYMENT_MANIFEST}
