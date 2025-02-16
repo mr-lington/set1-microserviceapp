@@ -4,7 +4,7 @@ pipeline {
         IMAGE_NAME = "bwhizzy25/adservice"
         BUILD_TAG = "${BUILD_NUMBER}"
         DEPLOYMENT_MANIFEST = "deployment-service.yml"
-        REPO_URL = "https://github.com/CloudHight/set1-microserviceapp.git" // Replace with your actual public GitHub repo URL
+        GIT_REPO_URL = "https://github.com/CloudHight/set1-microserviceapp.git"
         STAGE_BRANCH = "stage"
         MAIN_BRANCH = "main"
     }
@@ -31,31 +31,32 @@ pipeline {
             steps {
                 script {
                     sh """
-                        git clone ${REPO_URL}
-                        cd your-repo
+                        git clone ${GIT_REPO_URL}
+                        cd set1-microserviceapp
                         git checkout ${STAGE_BRANCH}
                         sed -i 's|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${BUILD_TAG}|' ${DEPLOYMENT_MANIFEST}
                         git add ${DEPLOYMENT_MANIFEST}
                         git commit -m "Update image tag to ${IMAGE_NAME}:${BUILD_TAG} in stage branch"
-                        git push ${REPO_URL} ${STAGE_BRANCH}
+                        git push origin ${STAGE_BRANCH}
                     """
                 }
             }
         }
         stage('Manual Approval for Main Branch Update') {
             steps {
-                input message: 'Approve deployment to the main branch?', ok: 'Proceed'
+                input message: "Approve updating deployment-service.yml in the main branch?"
             }
         }
         stage('Update Deployment Manifest in Main Branch') {
             steps {
                 script {
                     sh """
-                        git clone ${REPO_URL}
-                        cd your-repo
+                        cd set1-microserviceapp
                         git checkout ${MAIN_BRANCH}
-                        git merge ${STAGE_BRANCH}
-                        git push ${REPO_URL} ${MAIN_BRANCH}
+                        sed -i 's|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${BUILD_TAG}|' ${DEPLOYMENT_MANIFEST}
+                        git add ${DEPLOYMENT_MANIFEST}
+                        git commit -m "Update image tag to ${IMAGE_NAME}:${BUILD_TAG} in main branch"
+                        git push origin ${MAIN_BRANCH}
                     """
                 }
             }
