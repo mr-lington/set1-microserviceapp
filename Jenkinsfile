@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        IMAGE_NAME = "bwhizzy25/adservice"
+        IMAGE_NAME = "stephenadmin/adservice"
         BUILD_TAG = "${BUILD_NUMBER}"
         DEPLOYMENT_MANIFEST = "deployment-service.yml"
         GIT_REPO_URL = "https://github.com/CloudHight/set1-microserviceapp.git"
@@ -33,6 +33,8 @@ pipeline {
                     sh """
                         git clone ${GIT_REPO_URL}
                         cd set1-microserviceapp
+                        git config --global user.email "jenkins@yourdomain.com"
+                        git config --global user.name "Jenkins CI"
                         git checkout ${STAGE_BRANCH}
                         sed -i 's|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${BUILD_TAG}|' ${DEPLOYMENT_MANIFEST}
                         git add ${DEPLOYMENT_MANIFEST}
@@ -53,6 +55,8 @@ pipeline {
                     sh """
                         cd set1-microserviceapp
                         git checkout ${MAIN_BRANCH}
+                        git config --global user.email "jenkins@eamanzetec.com.ng"
+                        git config --global user.name "Jenkins CI"
                         sed -i 's|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${BUILD_TAG}|' ${DEPLOYMENT_MANIFEST}
                         git add ${DEPLOYMENT_MANIFEST}
                         git commit -m "Update image tag to ${IMAGE_NAME}:${BUILD_TAG} in main branch"
