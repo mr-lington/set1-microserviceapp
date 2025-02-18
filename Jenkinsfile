@@ -47,7 +47,7 @@ pipeline {
                                 echo "No changes detected, skipping commit in stage branch."
                             else
                                 git commit -m "Update image tag to ${IMAGE_NAME}:${BUILD_TAG} in stage branch"
-                                git push https://\$GIT_USERNAME:\$GIT_TOKEN@github.com/ayokunnumistephen/set1-microserviceapp.git ${STAGE_BRANCH}
+                                git push https://\$GIT_USERNAME:\$GIT_TOKEN@github.com/CloudHight/set1-microserviceapp.git ${STAGE_BRANCH}
                             fi
                         """
                     }
@@ -76,7 +76,7 @@ pipeline {
                                 echo "No changes detected, skipping commit in main branch."
                             else
                                 git commit -m "Update image tag to ${IMAGE_NAME}:${BUILD_TAG} in main branch"
-                                git push https://\$GIT_USERNAME:\$GIT_TOKEN@github.com/ayokunnumistephen/set1-microserviceapp.git ${MAIN_BRANCH}
+                                git push https://\$GIT_USERNAME:\$GIT_TOKEN@github.com/CloudHight/set1-microserviceapp.git ${MAIN_BRANCH}
                             fi
                         """
                     }
