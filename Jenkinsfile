@@ -61,18 +61,6 @@ pipeline {
             }
         }
 
-        stage("DAST Scan") {
-            steps {
-                script {
-                    slackSend(channel: SLACK_CHANNEL, message: "🔍 *DAST Scan* is in progress for cartservice pipeline.")
-                    sh '''
-                        chmod 777 $(pwd)
-                        docker run -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t https://stage.eamanzetec.com.ng -g gen.conf -r testreport.html
-                    '''
-                }
-            }
-        }
-
         stage('Manual Approval for Main Branch Update') {
             steps {
                 script {
