@@ -17,7 +17,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker build -t ${IMAGE_NAME}:${BUILD_TAG} ."
+                        sh "docker build -t ${IMAGE_NAME}:${BUILD_TAG} ./src"
                     }
                 }
             }
@@ -102,6 +102,16 @@ pipeline {
                                 git push https://${GIT_USERNAME}:${GIT_TOKEN}@${GIT_REPO_URL.replace('https://', '')} ${MAIN_BRANCH}
                             fi
                         """
+                    }
+                }
+            }
+        }
+
+        stage('Clean up disk') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                        sh "docker rmi ${IMAGE_NAME}:${BUILD_TAG}"
                     }
                 }
             }
