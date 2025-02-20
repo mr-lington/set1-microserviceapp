@@ -11,6 +11,7 @@ pipeline {
         SLACK_CHANNEL = "#27th-jan-ecommerce-project-using-kops"
     }
     
+    
     stages {
         stage('Build & Tag Docker Image') {
             steps {
@@ -22,6 +23,7 @@ pipeline {
             }
         }
         
+        
         stage('Push Docker Image') {
             steps {
                 script {
@@ -31,6 +33,7 @@ pipeline {
                 }
             }
         }
+        
         
         stage('Update Deployment Manifest in Stage Branch') {
             steps {
@@ -78,6 +81,7 @@ pipeline {
                 input message: "Approve updating deployment-service.yml in the main branch?"
             }
         }
+
 
         stage('Update Deployment Manifest in Main Branch') {
             steps {
