@@ -90,6 +90,16 @@ pipeline {
                 }
             }
         }
+
+        stage('Clean up disk') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                        sh "docker rmi ${IMAGE_NAME}:${BUILD_TAG}"
+                    }
+                }
+            }
+        }
     }
 
     post {
