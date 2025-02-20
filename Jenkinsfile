@@ -1,13 +1,16 @@
 pipeline {
     agent any
     environment {
+        APP_REPO_NAME = "set1-microserviceapp"
         IMAGE_NAME = "stephenadmin/cartservice"
         BUILD_TAG = "${BUILD_NUMBER}"
         DEPLOYMENT_MANIFEST = "deployment-service.yml"
-        GIT_REPO_URL = "https://github.com/ayokunnumistephen/set1-microserviceapp.git"
+        GIT_REPO_URL = "https://github.com/CloudHight/set1-microserviceapp.git"
         STAGE_BRANCH = "stage"
         MAIN_BRANCH = "main"
+        SLACK_CHANNEL = "#27th-jan-ecommerce-project-using-kops"
     }
+    
     stages {
         stage('Build & Tag Docker Image') {
             steps {
@@ -18,6 +21,7 @@ pipeline {
                 }
             }
         }
+        
         stage('Push Docker Image') {
             steps {
                 script {
@@ -27,48 +31,88 @@ pipeline {
                 }
             }
         }
+        
         stage('Update Deployment Manifest in Stage Branch') {
             steps {
                 script {
-                    // Using Git credentials
                     withCredentials([usernamePassword(credentialsId: 'git-cred', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
                         sh """
+                            rm -rf ${APP_REPO_NAME} || true
                             git clone ${GIT_REPO_URL}
-                            cd set1-microserviceapp
+                            cd ${APP_REPO_NAME}
                             git config --global user.email "jenkins@eamanzetec.com.ng"
                             git config --global user.name "Jenkins CI"
                             git checkout ${STAGE_BRANCH}
+                            git pull origin ${STAGE_BRANCH} --rebase
                             sed -i 's|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${BUILD_TAG}|' ${DEPLOYMENT_MANIFEST}
                             git add ${DEPLOYMENT_MANIFEST}
-                            git commit -m "Update image tag to ${IMAGE_NAME}:${BUILD_TAG} in stage branch"
-                            git push https://\$GIT_USERNAME:\$GIT_TOKEN@github.com/ayokunnumistephen/set1-microserviceapp.git ${STAGE_BRANCH}
+                            if git diff --cached --quiet; then
+                                echo "No changes detected, skipping commit in stage branch."
+                            else
+                                git commit -m "Update image tag to ${IMAGE_NAME}:${BUILD_TAG} in stage branch"
+                                git push https://${GIT_USERNAME}:${GIT_TOKEN}@${GIT_REPO_URL.replace('https://', '')} ${STAGE_BRANCH}
+                            fi
                         """
                     }
                 }
             }
         }
+
+        stage("DAST Scan") {
+            steps {
+                script {
+                    slackSend(channel: SLACK_CHANNEL, message: "🔍 *DAST Scan* is in progress for cartservice pipeline.")
+                    sh '''
+                        chmod 777 $(pwd)
+                        docker run -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t https://stage.eamanzetec.com.ng -g gen.conf -r testreport.html
+                    '''
+                }
+            }
+        }
+
         stage('Manual Approval for Main Branch Update') {
             steps {
+                script {
+                    slackSend(channel: SLACK_CHANNEL, message: " *Manual Approval Required for cartservice pipeline!* Please approve deployment to the *main* branch.")
+                }
                 input message: "Approve updating deployment-service.yml in the main branch?"
             }
         }
+
         stage('Update Deployment Manifest in Main Branch') {
             steps {
                 script {
-                    // Using Git credentials
                     withCredentials([usernamePassword(credentialsId: 'git-cred', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
                         sh """
-                            cd set1-microserviceapp
+                            cd ${APP_REPO_NAME}
                             git checkout ${MAIN_BRANCH}
+                            git pull origin ${MAIN_BRANCH} --rebase
                             git config --global user.email "jenkins@eamanzetec.com.ng"
                             git config --global user.name "Jenkins CI"
                             sed -i 's|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${BUILD_TAG}|' ${DEPLOYMENT_MANIFEST}
                             git add ${DEPLOYMENT_MANIFEST}
-                            git commit -m "Update image tag to ${IMAGE_NAME}:${BUILD_TAG} in main branch"
-                            git push https://\$GIT_USERNAME:\$GIT_TOKEN@github.com/ayokunnumistephen/set1-microserviceapp.git ${MAIN_BRANCH}
+                            if git diff --cached --quiet; then
+                                echo "No changes detected, skipping commit in main branch."
+                            else
+                                git commit -m "Update image tag to ${IMAGE_NAME}:${BUILD_TAG} in main branch"
+                                git push https://${GIT_USERNAME}:${GIT_TOKEN}@${GIT_REPO_URL.replace('https://', '')} ${MAIN_BRANCH}
+                            fi
                         """
                     }
                 }
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                slackSend(channel: SLACK_CHANNEL, message: "✅ *Build Succeeded!* Jenkins has successfully completed the cartservice pipeline. 🎉")
+            }
+        }
+        failure {
+            script {
+                slackSend(channel: SLACK_CHANNEL, message: "❌ *Build Failed! for cartservice pipeline* Please check the Jenkins logs for details. 🔴")
             }
         }
     }
