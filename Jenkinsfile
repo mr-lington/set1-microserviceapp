@@ -2,13 +2,13 @@ pipeline {
     agent any
     environment {
         APP_REPO_NAME = "set1-microserviceapp"
-        IMAGE_NAME = "stephenadmin/currencyservice"
+        IMAGE_NAME = "franklinonyia/currencyservice"
         BUILD_TAG = "${BUILD_NUMBER}"
         DEPLOYMENT_MANIFEST = "deployment-service.yml"
         GIT_REPO_URL = "https://github.com/CloudHight/set1-microserviceapp.git"
         STAGE_BRANCH = "stage"
         MAIN_BRANCH = "main"
-        SLACK_CHANNEL = "#27th-jan-ecommerce-project-using-kops"
+        SLACK_CHANNEL = "#16th-june-ecommerce-project-using-kops-eu-team1"
     }
     
     stages {
@@ -40,7 +40,7 @@ pipeline {
                             rm -rf ${APP_REPO_NAME} || true
                             git clone ${GIT_REPO_URL}
                             cd ${APP_REPO_NAME}
-                            git config --global user.email "jenkins@eamanzetec.com.ng"
+                            git config --global user.email "jenkins@set30.space"
                             git config --global user.name "Jenkins CI"
                             git checkout ${STAGE_BRANCH}
                             git pull origin ${STAGE_BRANCH} --rebase
@@ -75,7 +75,7 @@ pipeline {
                             cd ${APP_REPO_NAME}
                             git checkout ${MAIN_BRANCH}
                             git pull origin ${MAIN_BRANCH} --rebase
-                            git config --global user.email "jenkins@eamanzetec.com.ng"
+                            git config --global user.email "jenkins@set30.space"
                             git config --global user.name "Jenkins CI"
                             sed -i 's|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${BUILD_TAG}|' ${DEPLOYMENT_MANIFEST}
                             git add ${DEPLOYMENT_MANIFEST}
