@@ -40,7 +40,7 @@ pipeline {
                             rm -rf ${APP_REPO_NAME} || true
                             git clone ${GIT_REPO_URL}
                             cd ${APP_REPO_NAME}
-                            git config --global user.email "jenkins.3ureka.com"
+                            git config --global user.email "jenkins@3ureka.com"
                             git config --global user.name "Jenkins CI"
                             git checkout ${STAGE_BRANCH}
                             git pull origin ${STAGE_BRANCH} --rebase
@@ -75,7 +75,7 @@ pipeline {
                             cd ${APP_REPO_NAME}
                             git checkout ${MAIN_BRANCH}
                             git pull origin ${MAIN_BRANCH} --rebase
-                            git config --global user.email "jenkins.3ureka.com"
+                            git config --global user.email "jenkins@3ureka.com"
                             git config --global user.name "Jenkins CI"
                             sed -i 's|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${BUILD_TAG}|' ${DEPLOYMENT_MANIFEST}
                             git add ${DEPLOYMENT_MANIFEST}
