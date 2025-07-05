@@ -28,7 +28,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: franklinonyia/emailservice:1
+        image: lington/emailservice:1
         ports:
         - containerPort: 8080
         env:
@@ -81,7 +81,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: franklinonyia/checkoutservice:1
+          image: lington/checkoutservice:1
           ports:
           - containerPort: 5050
           readinessProbe:
@@ -143,7 +143,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: franklinonyia/recommendationservice:1
+        image: lington/recommendationservice:1
         ports:
         - containerPort: 8080
         readinessProbe:
@@ -200,7 +200,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: franklinonyia/frontend:1
+          image: lington/frontend:1
           ports:
           - containerPort: 8080
           readinessProbe:
@@ -297,7 +297,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: franklinonyia/paymentservice:1
+        image: lington/paymentservice:1
         ports:
         - containerPort: 50051
         env:
@@ -349,7 +349,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: franklinonyia/productcatalogservice:2
+        image: lington/productcatalogservice:2
         ports:
         - containerPort: 3550
         env:
@@ -401,7 +401,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: franklinonyia/cartservice:1
+        image: lington/cartservice:1
         ports:
         - containerPort: 7070
         env:
@@ -465,7 +465,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: franklinonyia/loadgenerator:1
+        image: lington/loadgenerator:1
         env:
         - name: FRONTEND_ADDR
           value: "frontend:80"
@@ -496,7 +496,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: franklinonyia/currencyservice:1
+        image: lington/currencyservice:1
         ports:
         - name: grpc
           containerPort: 7000
@@ -548,7 +548,7 @@ spec:
       serviceAccountName: default
       containers:
       - name: server
-        image: franklinonyia/shippingservice:3
+        image: lington/shippingservice:3
         ports:
         - containerPort: 50051
         env:
@@ -654,7 +654,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: franklinonyia/adservice:1
+        image: lington/adservice:1
         ports:
         - containerPort: 9555
         env:
