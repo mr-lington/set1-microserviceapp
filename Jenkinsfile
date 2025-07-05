@@ -5,7 +5,7 @@ pipeline {
         IMAGE_NAME = "lington/emailservice"
         BUILD_TAG = "${BUILD_NUMBER}"
         DEPLOYMENT_MANIFEST = "deployment-service.yml"
-        GIT_REPO_URL = "https://github.com/CloudHight/set1-microserviceapp.git"
+        GIT_REPO_URL = "https://github.com/mr-lington/set1-microserviceapp.git"
         STAGE_BRANCH = "stage"
         MAIN_BRANCH = "main"
         SLACK_CHANNEL = "#16th-june-ecommerce-project-using-kops-eu-team1"
